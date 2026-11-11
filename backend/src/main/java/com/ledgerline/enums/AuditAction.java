@@ -1,0 +1,17 @@
+package com.ledgerline.enums;
+
+public enum AuditAction {
+    USER_REGISTER,
+    USER_LOGIN,
+    LOGIN_FAILED,
+    ACCOUNT_CREATE,
+    ACCOUNT_FREEZE,
+    ACCOUNT_UNFREEZE,
+    ACCOUNT_CLOSE,
+    DEPOSIT,
+    WITHDRAWAL,
+    TRANSFER,
+    TRANSACTION_FAILED,
+    LEDGER_VERIFIED
+}
+
