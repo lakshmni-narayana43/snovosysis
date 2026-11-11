@@ -1,5 +1,5 @@
 server:
-  port: ${SERVER_PORT:8080}
+  port: ${PORT:${SERVER_PORT:8080}}
   error:
     include-message: always
     include-binding-errors: always
@@ -8,15 +8,18 @@ spring:
   application:
     name: ledgerline
   datasource:
-    url: ${SPRING_DATASOURCE_URL}
-    username: ${SPRING_DATASOURCE_USERNAME}
-    password: ${SPRING_DATASOURCE_PASSWORD}
+    url: ${DB_URL:${SPRING_DATASOURCE_URL}}
+    username: ${DB_USERNAME:${SPRING_DATASOURCE_USERNAME}}
+    password: ${DB_PASSWORD:${SPRING_DATASOURCE_PASSWORD}}
+    driver-class-name: ${SPRING_DATASOURCE_DRIVER:org.postgresql.Driver}
     hikari:
-      maximum-pool-size: 20
-      minimum-idle: 5
-      idle-timeout: 300000
-      connection-timeout: 20000
-      max-lifetime: 1200000
+      maximum-pool-size: 10
+      minimum-idle: 2
+      idle-timeout: 60000
+      connection-timeout: 30000
+      max-lifetime: 300000
+      keepalive-time: 30000
+      connection-test-query: SELECT 1
   jpa:
     open-in-view: false
     hibernate:
@@ -33,7 +36,7 @@ spring:
 
 ledgerline:
   demo-data:
-    enabled: false
+    enabled: ${DEMO_DATA_ENABLED:true}
   security:
     jwt:
       secret: ${JWT_SECRET}
