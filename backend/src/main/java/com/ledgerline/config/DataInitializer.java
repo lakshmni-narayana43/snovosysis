@@ -12,6 +12,7 @@ import com.ledgerline.service.AccountService;
 import com.ledgerline.service.TransactionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -29,17 +30,20 @@ public class DataInitializer implements CommandLineRunner {
     private final AccountService accountService;
     private final TransactionService transactionService;
     private final PasswordEncoder passwordEncoder;
+    private final boolean demoDataEnabled;
 
     public DataInitializer(UserRepository userRepository,
                            AccountRepository accountRepository,
                            AccountService accountService,
                            TransactionService transactionService,
-                           PasswordEncoder passwordEncoder) {
+                           PasswordEncoder passwordEncoder,
+                           @Value("${ledgerline.demo-data.enabled:false}") boolean demoDataEnabled) {
         this.userRepository = userRepository;
         this.accountRepository = accountRepository;
         this.accountService = accountService;
         this.transactionService = transactionService;
         this.passwordEncoder = passwordEncoder;
+        this.demoDataEnabled = demoDataEnabled;
     }
 
     @Override
@@ -55,6 +59,11 @@ public class DataInitializer implements CommandLineRunner {
             );
             accountRepository.save(clearing);
             log.info("Initialized system clearing account: ACC-SYSTEM-CLEARING");
+        }
+
+        if (!demoDataEnabled) {
+            log.info("Demo data seeding is disabled");
+            return;
         }
 
         // 2. Admin User
@@ -117,4 +126,3 @@ public class DataInitializer implements CommandLineRunner {
         }
     }
 }
-

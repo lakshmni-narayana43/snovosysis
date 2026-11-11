@@ -109,7 +109,7 @@ If $\text{Imbalance} \neq 0$, an alert is raised immediately.
 
 ---
 
-## 6. Pre-Seeded Demo Credentials
+## 6. Local Demo Credentials
 
 | Role | Username | Password | Purpose |
 | :--- | :--- | :--- | :--- |
@@ -117,6 +117,8 @@ If $\text{Imbalance} \neq 0$, an alert is raised immediately.
 | **Auditor** | `auditor` | `Auditor@123` | Read-only ledger verification, trial balance audits, reconciliation |
 | **Account Holder** | `alice` | `User@123` | Pre-funded with **₹10,000.0000** for live demo transfers |
 | **Account Holder** | `bob` | `User@123` | Pre-funded with **₹5,000.0000** for receiving transfers |
+
+These demo users are created only with the `local` profile. They are never seeded in the default deployment profile.
 
 ---
 
@@ -162,14 +164,29 @@ If $\text{Imbalance} \neq 0$, an alert is raised immediately.
 - **Node.js v18+** & **npm**
 
 ### Backend Setup
+The default profile requires a PostgreSQL connection. For a local-only H2 database and demo users, run with the `local` profile:
+
 ```powershell
 cd backend
 $env:JWT_SECRET = [Convert]::ToBase64String([Security.Cryptography.RandomNumberGenerator]::GetBytes(32))
 mvn clean compile
 mvn test
+mvn spring-boot:run "-Dspring-boot.run.profiles=local"
+```
+
+#### Neon PostgreSQL
+1. Create a PostgreSQL project in [Neon](https://neon.tech/) and copy its connection details from the Neon dashboard.
+2. Set these environment variables for the backend (use the values from Neon; do not commit them):
+
+```powershell
+$env:SPRING_DATASOURCE_URL = "jdbc:postgresql://<neon-host>/<database>?sslmode=require"
+$env:SPRING_DATASOURCE_USERNAME = "<neon-username>"
+$env:SPRING_DATASOURCE_PASSWORD = "<neon-password>"
+$env:JWT_SECRET = [Convert]::ToBase64String([Security.Cryptography.RandomNumberGenerator]::GetBytes(32))
 mvn spring-boot:run
 ```
-Set `JWT_SECRET` to a unique, base64-encoded key of at least 32 random bytes in each environment; keep it private and use the same value across backend instances. The backend starts on `http://localhost:8080`.
+
+Replace the placeholders with the Neon host, database, username, and password. On a hosting provider, configure these as backend environment variables instead of running the PowerShell commands. The PostgreSQL driver is selected automatically from the JDBC URL, and Flyway applies the database migrations at startup. The default profile does not seed demo users; register users through the app or API. Keep `JWT_SECRET` unique and private, and use the same value across backend instances. The backend starts on `http://localhost:8080`.
 
 ### Frontend Setup
 ```powershell
